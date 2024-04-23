@@ -35,7 +35,7 @@ parseContentItem
 parseSplitSource :: Parsec String () SplitSource
 parseSplitSource = do
     items <- many parseOne
-    let indItems = zip items [1..]
+    let indItems = zip items [0..]
     let splitSrc = foldr
                     (\((sp, itm), ind) rest -> ContentSeparator sp $ ContentItem ind itm rest) 
                     SourceEnd 
@@ -46,6 +46,25 @@ parseSplitSource = do
             contSep <- parseContentSeparator
             contItem <- parseContentItem
             if contSep == "" && contItem == "" then parserFail "" else return (contSep, contItem)
+
+parseContentFile :: Parsec String () [String]
+parseContentFile = many $ do
+    optional (char '\n')
+    string contentMarker
+    many digit
+    char ' '
+    many (noneOf ['\n'])
+
+reassembleSourceTemplate :: [String] -> Parsec String () String
+reassembleSourceTemplate content = do
+    markers <- many parseOne
+    let reassembled = foldr (\(sp, itm) rest -> sp ++ itm ++ rest) "" markers
+    return reassembled
+    where
+        parseOne = do
+            contSep <- parseContentSeparator
+            contMarker <- fmap ((content !!) . read) (string contentMarker >> many digit)
+            return (contSep, contMarker)
 
 splitSourceContent :: SplitSource -> String
 splitSourceContent src = tail $ go src ""

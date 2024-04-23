@@ -14,5 +14,10 @@ someFunc = do
     case parsed of
         Left err -> putStrLn $ show err
         Right s -> do
-            writeFile "junk/testin.content" $ splitSourceContent s
-            writeFile "junk/testin.format" $ splitSourceTemplate s
+            let content =  splitSourceContent s
+            let format = splitSourceTemplate s
+            writeFile "junk/testin.content" content
+            writeFile "junk/testin.format" format
+            let contentStrings = either (const []) id $ runParser parseContentFile () "" content
+            let reassembled = either (const "") id $ runParser (reassembleSourceTemplate contentStrings) () "" format
+            writeFile "junk/testin.reassembled" $ reassembled
