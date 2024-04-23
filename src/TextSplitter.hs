@@ -47,6 +47,7 @@ parseSplitSource = do
             contItem <- parseContentItem
             if contSep == "" && contItem == "" then parserFail "" else return (contSep, contItem)
 
+-- Parse a content file, which is just a bunch of strings
 parseContentFile :: Parsec String () [String]
 parseContentFile = many $ do
     optional (char '\n')
@@ -55,6 +56,7 @@ parseContentFile = many $ do
     char ' '
     many (noneOf ['\n'])
 
+-- Given a list of pieces of content, substitute them back into a template
 reassembleSourceTemplate :: [String] -> Parsec String () String
 reassembleSourceTemplate content = do
     markers <- many parseOne

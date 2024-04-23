@@ -27,6 +27,8 @@ library
   exposed-modules:
       Lib
       TextSplitter
+      TransAPIs
+      TransInterface
       TranslationEnv
   other-modules:
       Paths_translation_workflow
@@ -36,9 +38,17 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
     , filepath
+    , http-conduit
     , parsec
+    , req
+    , request
+    , utf8-string
+    , yaml
   default-language: Haskell2010
 
 executable translation-workflow-exe
@@ -51,10 +61,18 @@ executable translation-workflow-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
     , filepath
+    , http-conduit
     , parsec
+    , req
+    , request
     , translation-workflow
+    , utf8-string
+    , yaml
   default-language: Haskell2010
 
 test-suite translation-workflow-test
@@ -68,8 +86,16 @@ test-suite translation-workflow-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
+    , brick
+    , bytestring
     , filepath
+    , http-conduit
     , parsec
+    , req
+    , request
     , translation-workflow
+    , utf8-string
+    , yaml
   default-language: Haskell2010
