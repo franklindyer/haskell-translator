@@ -5,33 +5,53 @@ import Control.Monad.State.Strict
 import qualified Graphics.Vty as V
 
 data TransState = TransState {
-    currentPassage :: Int,
-    passages :: [(String, String)]
+    currentIndex :: Int,
+    currentPassage :: (String, String),
+    prevPassages :: [(String, String)],
+    nextPassages :: [(String, String)]
 } deriving (Eq, Show)
 
 data TransEvent = TransSuggestion String
 
 initTranslator :: [String] -> TransState
 initTranslator ps = TransState {
-    currentPassage = 0, 
-    passages = zip ps (repeat "")
+    currentIndex = 0,
+    currentPassage = (head ps, ""),
+    prevPassages = [],
+    nextPassages = zip (tail ps) (repeat "")
 }
 
+currentSourcePassage :: TransState -> String
+currentSourcePassage = fst . currentPassage
+
+currentTargetPassage :: TransState -> String
+currentTargetPassage = snd . currentPassage
+
 inferPassage :: TransState -> TransState
-inferPassage ts = ts { currentPassage = ind } 
-    where
-        ps = passages ts
-        allDone = and $ map (not . null . snd) ps
-        ind = snd $ head $ filter (null . snd . fst) $ zip ps [0..]
+inferPassage ts
+    = if currentTargetPassage ts == "" && nextPassages ts /= []
+        then inferPassage (nextPassage ts)
+        else ts
 
 nextPassage :: TransState -> TransState
-nextPassage ts = ts { currentPassage = min (1 + currentPassage ts) (length (passages ts) - 1) }
+nextPassage ts = case (nextPassages ts) of
+    [] -> ts
+    (p:ps) -> ts {
+        currentIndex = currentIndex ts + 1,
+        currentPassage = p,
+        prevPassages = (currentPassage ts):(prevPassages ts),
+        nextPassages = ps
+    }
 
 prevPassage :: TransState -> TransState
-prevPassage ts = ts { currentPassage = max (-1 + currentPassage ts) 0 }
-
-getPassage :: TransState -> String
-getPassage ts = fst $ (passages ts) !! (currentPassage ts)
+prevPassage ts = case (prevPassages ts) of
+    [] -> ts
+    (p:ps) -> ts {
+        currentIndex = currentIndex ts - 1,
+        currentPassage = p,
+        prevPassages = ps,
+        nextPassages = (currentPassage ts):(nextPassages ts)
+    }
 
 transAppEvent :: BrickEvent () TransEvent -> EventM () TransState ()
 transAppEvent e

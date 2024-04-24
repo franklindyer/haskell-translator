@@ -11,7 +11,7 @@ import TransState
 transUI :: TransState -> [Widget ()]
 transUI ts = [
         border $
-        (strWrap $ getPassage ts)
+        (strWrap $ fst $ currentPassage ts)
         <+> vBorder
         <+> (strWrap "Holamundo")
     ]
