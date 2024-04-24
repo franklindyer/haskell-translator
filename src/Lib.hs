@@ -7,25 +7,41 @@ module Lib
 
 import Brick
 import Control.Monad (void, forever)
+import Control.Monad.Trans.Reader
 import Text.Parsec
 
 import TextSplitter
-import TranslationEnv
+import TransEnv
+import TransActions
 import TransAPIs
 import TransInterface
 import TransState
 
 someFunc :: IO ()
 someFunc = do
-    sampleTxt <- readFile "junk/testin.content"
-    let parsed = runParser parseContentFile () "" sampleTxt
-    case parsed of
-        Left err -> putStrLn $ show err
-        Right s -> do
-            let ss = initTranslator s
-            void $ customMainWithDefaultVty Nothing transApp ss 
-    return ()
+    let fileName = "junk/testin.txt"
+    let targetLang = "en"
 
+    let transEnv = TransEnv {
+        basePath = "junk/testin.txt",
+        sourceLang = "en",
+        targetLang = "es"
+    }
+
+    runReaderT preprocSource transEnv
+    runReaderT translateSource transEnv
+--    runReaderT postprocSource transEnv
+ 
+{- 
+    sampleTxt <- readFile ("junk/" ++ fileName ++ ".content")
+    let (Right s) = runParser parseContentFile () "" sampleTxt
+
+    let ss = initTranslator s
+    translated <- fmap ((map snd) . allPassages . fst) $ customMainWithDefaultVty Nothing transApp ss
+    contentOut <- writeFile ("junk/" ++ fileName ++ ".content." ++ targetLang) (stringListContent translated)
+
+    return ()
+-}
 {-
     s <- libreTranslate "ar" "Call me Ishmael. Some years ago..."
     putStrLn s

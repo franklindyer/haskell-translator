@@ -75,6 +75,9 @@ splitSourceContent src = tail $ go src ""
         go (ContentItem n s rest) acc = go rest (acc ++ "\n" ++ contentMarker ++ show n ++ " " ++ s)
         go (ContentSeparator _ rest) acc = go rest acc
 
+stringListContent :: [String] -> String
+stringListContent src = tail $ concat $ map (\(n,s) -> "\n" ++ contentMarker ++ show n ++ " " ++ s) $ zip [0..] src
+
 splitSourceTemplate :: SplitSource -> String
 splitSourceTemplate src = go src ""
     where

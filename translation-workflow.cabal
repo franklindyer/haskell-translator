@@ -27,9 +27,10 @@ library
   exposed-modules:
       Lib
       TextSplitter
+      TransActions
       TransAPIs
+      TransEnv
       TransInterface
-      TranslationEnv
       TransState
   other-modules:
       Paths_translation_workflow
@@ -44,6 +45,7 @@ library
     , brick
     , bytestring
     , data-has
+    , directory
     , filepath
     , http-conduit
     , lens
@@ -54,6 +56,7 @@ library
     , req
     , request
     , text
+    , transformers
     , utf8-string
     , vty
     , yaml
@@ -74,6 +77,7 @@ executable translation-workflow-exe
     , brick
     , bytestring
     , data-has
+    , directory
     , filepath
     , http-conduit
     , lens
@@ -84,6 +88,7 @@ executable translation-workflow-exe
     , req
     , request
     , text
+    , transformers
     , translation-workflow
     , utf8-string
     , vty
@@ -106,6 +111,7 @@ test-suite translation-workflow-test
     , brick
     , bytestring
     , data-has
+    , directory
     , filepath
     , http-conduit
     , lens
@@ -116,6 +122,7 @@ test-suite translation-workflow-test
     , req
     , request
     , text
+    , transformers
     , translation-workflow
     , utf8-string
     , vty

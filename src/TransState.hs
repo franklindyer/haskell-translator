@@ -30,17 +30,38 @@ initTranslator ps = TransState {
     scratch = editor () Nothing ""
 }
 
+loadPartialTranslation :: [String] -> TransState -> TransState
+loadPartialTranslation ps ts = ts {
+    prevPassages = prevLoaded,
+    currentPassage = currentLoaded,
+    nextPassages = nextLoaded,
+    scratch = editor () Nothing (snd currentLoaded)
+}
+    where
+        n = length $ prevPassages ts
+        prevLoaded = zip (map fst $ prevPassages ts) (reverse $ take n ps)
+        currentLoaded = (fst $ currentPassage ts, ps !! n)
+        nextLoaded = zip (map fst $ nextPassages ts) (drop (n+1) ps)
+
 currentSourcePassage :: TransState -> String
 currentSourcePassage = fst . currentPassage
 
 currentTargetPassage :: TransState -> String
 currentTargetPassage = snd . currentPassage
 
+allPassages :: TransState -> [(String, String)]
+allPassages ts = reverse (prevPassages ts) ++ [currentPassage ts] ++ nextPassages ts
+
 inferPassage :: TransState -> TransState
 inferPassage ts
     = if currentTargetPassage ts == "" && nextPassages ts /= []
         then inferPassage (nextPassage ts)
         else ts
+
+savePassage :: TransState -> TransState
+savePassage ts = ts { currentPassage = savedPsg }
+    where
+        savedPsg = (fst $ currentPassage ts, head $ getEditContents $ scratch ts)
 
 nextPassage :: TransState -> TransState
 nextPassage ts = case (nextPassages ts) of
@@ -73,7 +94,7 @@ transAppEvent e
     = case e of
         VtyEvent (V.EvKey V.KDown []) -> state (\ts -> ((), nextPassage ts))
         VtyEvent (V.EvKey V.KUp []) -> state (\ts -> ((), prevPassage ts))
-        VtyEvent (V.EvKey V.KEsc []) -> halt
+        VtyEvent (V.EvKey V.KEsc []) -> state (\ts -> ((), savePassage ts)) >> halt
         _ -> zoom scratchLens $ handleEditorEvent e
 
 transMakeApp :: App TransState TransEvent ()

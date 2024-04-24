@@ -25,6 +25,7 @@ dependencies:
 - brick
 - bytestring
 - data-has
+- directory
 - filepath
 - http-conduit
 - lens
@@ -35,6 +36,7 @@ dependencies:
 - req
 - request
 - text
+- transformers
 - utf8-string
 - vty
 - yaml
