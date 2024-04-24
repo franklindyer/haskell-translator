@@ -26,10 +26,12 @@ dependencies:
 - bytestring
 - filepath
 - http-conduit
+- mtl
 - parsec
 - req
 - request
 - utf8-string
+- vty
 - yaml
 
 ghc-options:

@@ -1,59 +1,25 @@
 translation-workflow> build (lib + exe)
 Preprocessing library for translation-workflow-0.1.0.0..
 Building library for translation-workflow-0.1.0.0..
-[3 of 6] Compiling TransAPIs [Source file changed]
+[5 of 7] Compiling TransState
 
-/Users/franklindyer/Documents/dev/haskell-translator/src/TransAPIs.hs:16:17: error: [GHC-83865]
-    • Couldn't match type: [Char]
-                     with: (Key, Value)
-      Expected: aeson-2.1.2.1:Data.Aeson.Types.Internal.Pair
-        Actual: String
-    • In the expression: "source" .= "auto" :: String
-      In the first argument of ‘object’, namely
-        ‘["source" .= "auto" :: String, "target" .= "de" :: String,
-          "q" .= "Call me Ishmael. Some years ago..." :: String]’
+/Users/franklindyer/Documents/dev/haskell-translator/src/TransState.hs:36:42: error: [GHC-18872]
+    • Couldn't match type ‘TransState’ with ‘TransState -> TransState’
+        arising from a functional dependency between:
+          constraint ‘MonadState
+                        (TransState -> TransState) (EventM () TransState)’
+            arising from a use of ‘state’
+          instance ‘MonadState s (EventM n s)’ at <no location info>
+    • In the expression: state (\ ts -> ((), nextPassage))
+      In a case alternative:
+          VtyEvent (V.EvKey V.KDown []) -> state (\ ts -> ((), nextPassage))
       In the expression:
-        object
-          ["source" .= "auto" :: String, "target" .= "de" :: String,
-           "q" .= "Call me Ishmael. Some years ago..." :: String]
+        case e of
+          VtyEvent (V.EvKey V.KDown []) -> state (\ ts -> ((), nextPassage))
+          VtyEvent (V.EvKey V.KUp []) -> state (\ ts -> ((), prevPassage))
    |
-16 |                 "source" .= "auto" :: String,
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-/Users/franklindyer/Documents/dev/haskell-translator/src/TransAPIs.hs:17:17: error: [GHC-83865]
-    • Couldn't match type: [Char]
-                     with: (Key, Value)
-      Expected: aeson-2.1.2.1:Data.Aeson.Types.Internal.Pair
-        Actual: String
-    • In the expression: "target" .= "de" :: String
-      In the first argument of ‘object’, namely
-        ‘["source" .= "auto" :: String, "target" .= "de" :: String,
-          "q" .= "Call me Ishmael. Some years ago..." :: String]’
-      In the expression:
-        object
-          ["source" .= "auto" :: String, "target" .= "de" :: String,
-           "q" .= "Call me Ishmael. Some years ago..." :: String]
-   |
-17 |                 "target" .= "de" :: String,
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-/Users/franklindyer/Documents/dev/haskell-translator/src/TransAPIs.hs:18:17: error: [GHC-83865]
-    • Couldn't match type: [Char]
-                     with: (Key, Value)
-      Expected: aeson-2.1.2.1:Data.Aeson.Types.Internal.Pair
-        Actual: String
-    • In the expression:
-          "q" .= "Call me Ishmael. Some years ago..." :: String
-      In the first argument of ‘object’, namely
-        ‘["source" .= "auto" :: String, "target" .= "de" :: String,
-          "q" .= "Call me Ishmael. Some years ago..." :: String]’
-      In the expression:
-        object
-          ["source" .= "auto" :: String, "target" .= "de" :: String,
-           "q" .= "Call me Ishmael. Some years ago..." :: String]
-   |
-18 |                 "q" .= "Call me Ishmael. Some years ago..." :: String
-   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+36 |         VtyEvent (V.EvKey V.KDown []) -> state (\ts -> ((), nextPassage))
+   |                                          ^^^^^
 
 Error: [S-7282]
        Stack failed to execute the build plan.
