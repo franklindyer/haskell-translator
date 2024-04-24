@@ -1,24 +1,33 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module TransState where
 
 import Brick
+import Brick.Widgets.Edit
+import Control.Lens.TH
 import Control.Monad.State.Strict
 import qualified Graphics.Vty as V
+import Lens.Micro
 
 data TransState = TransState {
     currentIndex :: Int,
     currentPassage :: (String, String),
     prevPassages :: [(String, String)],
-    nextPassages :: [(String, String)]
-} deriving (Eq, Show)
+    nextPassages :: [(String, String)],
+    scratch :: Editor String ()
+}
 
 data TransEvent = TransSuggestion String
+
+makeLensesFor [("scratch", "scratchLens")] ''TransState
 
 initTranslator :: [String] -> TransState
 initTranslator ps = TransState {
     currentIndex = 0,
     currentPassage = (head ps, ""),
     prevPassages = [],
-    nextPassages = zip (tail ps) (repeat "")
+    nextPassages = zip (tail ps) (repeat ""),
+    scratch = editor () Nothing ""
 }
 
 currentSourcePassage :: TransState -> String
@@ -39,9 +48,12 @@ nextPassage ts = case (nextPassages ts) of
     (p:ps) -> ts {
         currentIndex = currentIndex ts + 1,
         currentPassage = p,
-        prevPassages = (currentPassage ts):(prevPassages ts),
-        nextPassages = ps
+        prevPassages = savedPsg:(prevPassages ts),
+        nextPassages = ps,
+        scratch = editor () Nothing (snd p)
     }
+    where
+        savedPsg = (fst $ currentPassage ts, head $ getEditContents $ scratch ts)
 
 prevPassage :: TransState -> TransState
 prevPassage ts = case (prevPassages ts) of
@@ -50,8 +62,11 @@ prevPassage ts = case (prevPassages ts) of
         currentIndex = currentIndex ts - 1,
         currentPassage = p,
         prevPassages = ps,
-        nextPassages = (currentPassage ts):(nextPassages ts)
+        nextPassages = savedPsg:(nextPassages ts),
+        scratch = editor () Nothing (snd p)
     }
+    where
+        savedPsg = (fst $ currentPassage ts, head $ getEditContents $ scratch ts)
 
 transAppEvent :: BrickEvent () TransEvent -> EventM () TransState ()
 transAppEvent e
@@ -59,7 +74,7 @@ transAppEvent e
         VtyEvent (V.EvKey V.KDown []) -> state (\ts -> ((), nextPassage ts))
         VtyEvent (V.EvKey V.KUp []) -> state (\ts -> ((), prevPassage ts))
         VtyEvent (V.EvKey V.KEsc []) -> halt
-        VtyEvent _ -> state (\ts -> ((), ts))
+        _ -> zoom scratchLens $ handleEditorEvent e
 
 transMakeApp :: App TransState TransEvent ()
 transMakeApp = App {

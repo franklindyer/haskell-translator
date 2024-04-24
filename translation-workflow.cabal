@@ -43,12 +43,17 @@ library
     , base >=4.7 && <5
     , brick
     , bytestring
+    , data-has
     , filepath
     , http-conduit
+    , lens
+    , microlens
+    , microlens-th
     , mtl
     , parsec
     , req
     , request
+    , text
     , utf8-string
     , vty
     , yaml
@@ -68,12 +73,17 @@ executable translation-workflow-exe
     , base >=4.7 && <5
     , brick
     , bytestring
+    , data-has
     , filepath
     , http-conduit
+    , lens
+    , microlens
+    , microlens-th
     , mtl
     , parsec
     , req
     , request
+    , text
     , translation-workflow
     , utf8-string
     , vty
@@ -95,12 +105,17 @@ test-suite translation-workflow-test
     , base >=4.7 && <5
     , brick
     , bytestring
+    , data-has
     , filepath
     , http-conduit
+    , lens
+    , microlens
+    , microlens-th
     , mtl
     , parsec
     , req
     , request
+    , text
     , translation-workflow
     , utf8-string
     , vty

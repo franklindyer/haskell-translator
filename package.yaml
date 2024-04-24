@@ -24,12 +24,17 @@ dependencies:
 - base >= 4.7 && < 5
 - brick
 - bytestring
+- data-has
 - filepath
 - http-conduit
+- lens
+- microlens
+- microlens-th
 - mtl
 - parsec
 - req
 - request
+- text
 - utf8-string
 - vty
 - yaml
