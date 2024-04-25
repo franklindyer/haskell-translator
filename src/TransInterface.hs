@@ -1,7 +1,12 @@
+{-# LANGUAGE TemplateHaskell #-}
+
 module TransInterface where
 
 import Brick
 import Brick.Forms
+import Brick.AttrMap
+import Brick.Types
+import Brick.Widgets.Core
 import Brick.Widgets.Border
 import Brick.Widgets.Edit
 import Control.Monad.State.Strict
@@ -10,19 +15,18 @@ import qualified Data.Text as T
 import qualified Graphics.Vty as V
 import Lens.Micro.TH.Internal
 
-import TransState
+import Graphics.Vty (Event(..), Key(..), Modifier(..))
 
---instance Has Text String where
---    getter = pack
---    modifier f s = unpack $ f (pack s)
+import TransState
 
 transUI :: TransState -> [Widget ()]
 transUI ts = [
-        border $
-        (strWrap $ fst $ currentPassage ts)
-        <+> vBorder
-        <+> (renderEditor (str . unlines) True $ scratch ts)
-    ]
+        border $ (
+            (strWrap $ fst $ currentPassage ts)
+            <+> vBorder
+            <+> (strWrap $ unlines $ getEditContents $ scratch ts)
+        )
+    ] 
 
 transApp :: App TransState TransEvent ()
 transApp = App {

@@ -36,6 +36,7 @@ dependencies:
 - req
 - request
 - text
+- text-zipper
 - transformers
 - utf8-string
 - vty

@@ -43,9 +43,9 @@ translateSource = do
     let translatedStrings = stringListContent $ map snd $ allPassages $ fst $ res
     lift $ writeFile targetContentFile translatedStrings 
 
-postprocSource :: ReaderT TransEnv IO ()
-postprocSource = do
-    contentFileName <- askSourceContentPath
+postprocTarget :: ReaderT TransEnv IO ()
+postprocTarget = do
+    contentFileName <- askTargetContentPath
     formatFileName <- askFormatPath
     outFileName <- askTranslationPath
     content <- lift $ readFile contentFileName

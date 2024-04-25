@@ -36,4 +36,4 @@ askTranslationPath :: Monad m => ReaderT TransEnv m FilePath
 askTranslationPath = do
     base <- fmap basePath ask
     lang <- fmap targetLang ask
-    return $ base ++ ".translation" ++ lang
+    return $ base ++ ".translation." ++ lang

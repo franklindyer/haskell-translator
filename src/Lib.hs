@@ -30,7 +30,7 @@ someFunc = do
 
     runReaderT preprocSource transEnv
     runReaderT translateSource transEnv
---    runReaderT postprocSource transEnv
+    runReaderT postprocTarget transEnv
  
 {- 
     sampleTxt <- readFile ("junk/" ++ fileName ++ ".content")
