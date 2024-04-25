@@ -29,6 +29,7 @@ library
       TextSplitter
       TransActions
       TransAPIs
+      TransApp
       TransEnv
       TransInterface
       TransState

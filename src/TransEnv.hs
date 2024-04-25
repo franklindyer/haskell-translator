@@ -1,12 +1,16 @@
 module TransEnv where
 
+import Brick.BChan
 import Control.Monad.Trans.Reader
 import System.FilePath
+
+import TransState
 
 data TransEnv = TransEnv {
     sourceLang :: String,
     targetLang :: String,
-    basePath :: FilePath
+    basePath :: FilePath,
+    apiChan :: BChan TransEvent
 }
 
 askFormatPath :: Monad m => ReaderT TransEnv m FilePath
@@ -37,3 +41,6 @@ askTranslationPath = do
     base <- fmap basePath ask
     lang <- fmap targetLang ask
     return $ base ++ ".translation." ++ lang
+
+askApiChan :: Monad m => ReaderT TransEnv m (BChan TransEvent)
+askApiChan = fmap apiChan ask

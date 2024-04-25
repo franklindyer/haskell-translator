@@ -22,17 +22,10 @@ import TransState
 transUI :: TransState -> [Widget ()]
 transUI ts = [
         border $ (
-            (strWrap $ fst $ currentPassage ts)
+            ((strWrap $ fst $ currentPassage ts)
+                <=> hBorder
+                <=> (strWrap $ suggestion ts))
             <+> vBorder
             <+> (strWrap $ unlines $ getEditContents $ scratch ts)
         )
     ] 
-
-transApp :: App TransState TransEvent ()
-transApp = App {
-    appDraw = transUI,
-    appChooseCursor = showFirstCursor,
-    appHandleEvent = transAppEvent,
-    appStartEvent = return (),
-    appAttrMap = const $ attrMap V.defAttr []
-}

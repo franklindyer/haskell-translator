@@ -6,6 +6,7 @@ module Lib
 
 
 import Brick
+import Brick.BChan
 import Control.Monad (void, forever)
 import Control.Monad.Trans.Reader
 import Text.Parsec
@@ -17,15 +18,19 @@ import TransAPIs
 import TransInterface
 import TransState
 
+import TransApp
+
 someFunc :: IO ()
 someFunc = do
     let fileName = "junk/testin.txt"
     let targetLang = "en"
 
+    chan <- newBChan 10
     let transEnv = TransEnv {
         basePath = "junk/testin.txt",
         sourceLang = "en",
-        targetLang = "es"
+        targetLang = "es",
+        apiChan = chan
     }
 
     runReaderT preprocSource transEnv

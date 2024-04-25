@@ -11,6 +11,7 @@ import TransAPIs
 import TransInterface
 import TransState
 import TransEnv
+import TransApp
 
 preprocSource :: ReaderT TransEnv IO ()
 preprocSource = do
@@ -39,7 +40,8 @@ translateSource = do
             let (Right targetStrings) = runParser parseContentFile () "" targetContent
             return $ loadPartialTranslation targetStrings transStateInit
         else return transStateInit
-    res <- lift $ customMainWithDefaultVty Nothing transApp transState    
+    env <- ask
+    res <- lift $ customMainWithDefaultVty (Just $ apiChan env) (transMakeApp env) transState    
     let translatedStrings = stringListContent $ map snd $ allPassages $ fst $ res
     lift $ writeFile targetContentFile translatedStrings 
 
