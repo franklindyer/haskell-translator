@@ -23,18 +23,18 @@ transAppEvent :: BrickEvent () TransEvent -> ReaderT TransEnv (EventM () TransSt
 transAppEvent e = do
     chan <- askApiChan
     toLang <- fmap targetLang ask
-    lift $ case e of
+    case e of
         VtyEvent (V.EvKey V.KDown []) -> do
-            modify nextPassage
-            toTranslate <- fmap (fst . currentPassage) get
-            void $ liftIO $ forkIO $ do
-                suggested <- liftIO $ libreTranslate toLang toTranslate
-                writeBChan chan (TransSuggestion suggested)
+            lift $ modify eraseSuggestion
+            lift $ modify nextPassage
+            runTranslatorEvents
         VtyEvent (V.EvKey V.KUp []) -> do
-            modify prevPassage
-        VtyEvent (V.EvKey V.KEsc []) -> state (\ts -> ((), savePassage ts)) >> halt
-        AppEvent (TransSuggestion s) -> state (\ts -> ((), ts { suggestion = s }))
-        _ -> zoom scratchLens $ handleEditorEvent e
+            lift $ modify eraseSuggestion
+            lift $ modify prevPassage
+            runTranslatorEvents
+        VtyEvent (V.EvKey V.KEsc []) -> lift $ state (\ts -> ((), savePassage ts)) >> halt
+        AppEvent (TransSuggestionEvent sugg) -> lift $ modify $ receiveSuggestion sugg 
+        _ -> lift $ zoom scratchLens $ handleEditorEvent e
 
 transMakeApp :: TransEnv -> App TransState TransEvent ()
 transMakeApp env = App {

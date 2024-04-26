@@ -30,7 +30,8 @@ someFunc = do
         basePath = "junk/testin.txt",
         sourceLang = "en",
         targetLang = "es",
-        apiChan = chan
+        apiChan = chan,
+        suggestors = [("LibreTranslate", libreTranslate)]
     }
 
     runReaderT preprocSource transEnv

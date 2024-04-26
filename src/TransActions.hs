@@ -38,7 +38,7 @@ translateSource = do
         then do
             targetContent <- lift $ readFile targetContentFile
             let (Right targetStrings) = runParser parseContentFile () "" targetContent
-            return $ loadPartialTranslation targetStrings transStateInit
+            return $ inferPassage $ loadPartialTranslation targetStrings transStateInit
         else return transStateInit
     env <- ask
     res <- lift $ customMainWithDefaultVty (Just $ apiChan env) (transMakeApp env) transState    

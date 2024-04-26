@@ -6,11 +6,14 @@ import System.FilePath
 
 import TransState
 
+type ApiTranslator = (String, String -> String -> IO String)
+
 data TransEnv = TransEnv {
     sourceLang :: String,
     targetLang :: String,
     basePath :: FilePath,
-    apiChan :: BChan TransEvent
+    apiChan :: BChan TransEvent,
+    suggestors :: [ApiTranslator]
 }
 
 askFormatPath :: Monad m => ReaderT TransEnv m FilePath

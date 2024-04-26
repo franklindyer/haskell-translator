@@ -19,12 +19,17 @@ import Graphics.Vty (Event(..), Key(..), Modifier(..))
 
 import TransState
 
+suggestionWidget :: TransSuggestions -> Widget ()
+suggestionWidget suggs 
+    = foldr (<=>) emptyWidget $ map makeSugg suggs
+    where makeSugg (src, sugg) = border $ str src <=> hBorder <=> strWrap sugg
+
 transUI :: TransState -> [Widget ()]
 transUI ts = [
         border $ (
             ((strWrap $ fst $ currentPassage ts)
                 <=> hBorder
-                <=> (strWrap $ suggestion ts))
+                <=> (suggestionWidget $ suggestion ts))
             <+> vBorder
             <+> (strWrap $ unlines $ getEditContents $ scratch ts)
         )

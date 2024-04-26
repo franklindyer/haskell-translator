@@ -11,16 +11,19 @@ import Control.Monad.Trans.Reader
 import qualified Graphics.Vty as V
 import Lens.Micro
 
+type TransSuggestion = (String, String)
+type TransSuggestions = [TransSuggestion]
+
 data TransState = TransState {
     currentIndex :: Int,
     currentPassage :: (String, String),
-    suggestion :: String,
+    suggestion :: TransSuggestions,
     prevPassages :: [(String, String)],
     nextPassages :: [(String, String)],
     scratch :: Editor String ()
 }
 
-data TransEvent = TransSuggestion String
+data TransEvent = TransSuggestionEvent TransSuggestion
 
 makeLensesFor [("scratch", "scratchLens")] ''TransState
 
@@ -28,7 +31,7 @@ initTranslator :: [String] -> TransState
 initTranslator ps = TransState {
     currentIndex = 0,
     currentPassage = (head ps, ""),
-    suggestion = "",
+    suggestion = [],
     prevPassages = [],
     nextPassages = zip (tail ps) (repeat ""),
     scratch = editor () Nothing ""
@@ -67,6 +70,13 @@ savePassage ts = ts { currentPassage = savedPsg }
     where
         savedPsg = (fst $ currentPassage ts, head $ getEditContents $ scratch ts)
 
+receiveSuggestion :: TransSuggestion -> TransState -> TransState
+receiveSuggestion sugg ts = ts { suggestion = sugg:(filter ((/= (fst sugg)) . fst) suggs) }
+    where suggs = suggestion ts
+
+eraseSuggestion :: TransState -> TransState
+eraseSuggestion ts = ts { suggestion = [] }
+
 nextPassage :: TransState -> TransState
 nextPassage ts = case (nextPassages ts) of
     [] -> ts
@@ -92,4 +102,5 @@ prevPassage ts = case (prevPassages ts) of
     }
     where
         savedPsg = (fst $ currentPassage ts, head $ getEditContents $ scratch ts)
+
 
