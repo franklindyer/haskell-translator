@@ -10,6 +10,7 @@ import Brick.BChan
 import Control.Monad (void, forever)
 import Control.Monad.Trans.Reader
 import Text.Parsec
+import System.IO
 
 import TextSplitter
 import TransEnv
@@ -26,44 +27,22 @@ someFunc = do
     let targetLang = "en"
 
     chan <- newBChan 10
+
+    putStr "File to translate: " >> hFlush stdout
+    toTranslate <- getLine 
+    putStr "Source language: " >> hFlush stdout
+    srcLang <- getLine
+    putStr "Target language: " >> hFlush stdout
+    trgLang <- getLine
+
     let transEnv = TransEnv {
-        basePath = "junk/testin.txt",
-        sourceLang = "en",
-        targetLang = "es",
+        basePath = toTranslate,
+        sourceLang = srcLang,
+        targetLang = trgLang,
         apiChan = chan,
         suggestors = [("LibreTranslate", libreTranslate)]
     }
 
     runReaderT preprocSource transEnv
     runReaderT translateSource transEnv
-    runReaderT postprocTarget transEnv
- 
-{- 
-    sampleTxt <- readFile ("junk/" ++ fileName ++ ".content")
-    let (Right s) = runParser parseContentFile () "" sampleTxt
-
-    let ss = initTranslator s
-    translated <- fmap ((map snd) . allPassages . fst) $ customMainWithDefaultVty Nothing transApp ss
-    contentOut <- writeFile ("junk/" ++ fileName ++ ".content." ++ targetLang) (stringListContent translated)
-
-    return ()
--}
-{-
-    s <- libreTranslate "ar" "Call me Ishmael. Some years ago..."
-    putStrLn s
--}
---    simpleMain translationUI
-{-
-    sampleTxt <- readFile "junk/testin.txt"
-    let parsed = runParser parseSplitSource () "" sampleTxt
-    case parsed of
-        Left err -> putStrLn $ show err
-        Right s -> do
-            let content =  splitSourceContent s
-            let format = splitSourceTemplate s
-            writeFile "junk/testin.content" content
-            writeFile "junk/testin.format" format
-            let contentStrings = either (const []) id $ runParser parseContentFile () "" content
-            let reassembled = either (const "") id $ runParser (reassembleSourceTemplate contentStrings) () "" format
-            writeFile "junk/testin.reassembled" $ reassembled
--}
+    runReaderT postprocTarget transEnv 
