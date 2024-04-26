@@ -32,6 +32,7 @@ transAppEvent e = do
             lift $ modify eraseSuggestion
             lift $ modify prevPassage
             runTranslatorEvents
+        VtyEvent (V.EvKey V.KRight [V.MShift]) -> lift $ modify copyPassage -- lift $ state (\ts -> ((), copyPassage ts))
         VtyEvent (V.EvKey V.KEsc []) -> lift $ state (\ts -> ((), savePassage ts)) >> halt
         AppEvent (TransSuggestionEvent sugg) -> lift $ modify $ receiveSuggestion sugg 
         _ -> lift $ zoom scratchLens $ handleEditorEvent e

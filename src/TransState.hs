@@ -70,6 +70,10 @@ savePassage ts = ts { currentPassage = savedPsg }
     where
         savedPsg = (fst $ currentPassage ts, head $ getEditContents $ scratch ts)
 
+copyPassage :: TransState -> TransState
+copyPassage ts = ts { currentPassage = (psg, psg), scratch = editor () Nothing psg }
+    where psg = fst $ currentPassage ts
+
 receiveSuggestion :: TransSuggestion -> TransState -> TransState
 receiveSuggestion sugg ts = ts { suggestion = sugg:(filter ((/= (fst sugg)) . fst) suggs) }
     where suggs = suggestion ts
